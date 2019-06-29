@@ -10,11 +10,13 @@ from solid.utils import *
 
 SEGMENTS = 48
 
-def bottomHoles(pins, cell, z, z_offset):
+from pin import pinHole
+
+def bottomHoles(pins, cell, z_offset):
     bottom_holes = union()
     # center at end of process
     # pin is (x,y,z) = (3,7,15)
-    bottom_hole = cube([4,8,z], center=True)
+    bottom_hole = pinHole()
     for x in range(pins):
         for y in range(pins):
             bottom_holes = bottom_holes + forward(y*cell)(right(x*cell)(bottom_hole))
@@ -22,13 +24,13 @@ def bottomHoles(pins, cell, z, z_offset):
     return bottom_holes
 
 def slideHoles(pins, cell, boarder, z, z_slide):
-    # x_pin +2 boarder + gap 1 + 2 boarder; 
-    x_slide = 3 + 2 + 1 + 2
+    # x_pin +2 boarder + gap 1 + 2 boarder + 0,5 space to slide
+    x_slide = 3 + 2 + 1 + 2 + 0.5
     slide_hole = cube([x_slide, ((pins*cell)+boarder) *2, z_slide*2], center=True)
     slide_holes = union()
     for x in range(pins):
         slide_holes = slide_holes + right(x*cell)(slide_hole)
-    slide_holes = translate([-(pins-1)*cell/2, 0, z/2])(slide_holes)
+    slide_holes = translate([-(pins-1)*cell/2, 0, z/2 ])(slide_holes)
     return slide_holes
 
 def screwHoles(pins, cell, boarder, z):
@@ -55,7 +57,7 @@ def bottom(pins=2):
     z = 15 + 2  + 1 + 1 
     bottom = cube([(pins*cell)+boarder, (pins*cell)+boarder,z], 
                     center=True)
-    bottom -= bottomHoles(pins,cell,z, z_offset = 2)
+    bottom -= bottomHoles(pins,cell, z_offset = 1) # offset of half of 2
     bottom -= slideHoles(pins,cell, boarder, z, z_slide=1)
     bottom -= screwHoles(pins,cell, boarder, z)
     return bottom

@@ -10,6 +10,8 @@ from solid.utils import *
 
 SEGMENTS = 48
 
+def pinHole():
+	return cube([4,8,15+2], center=True)
 
 def pin():
     x = 3
@@ -19,11 +21,11 @@ def pin():
     pin_core = cube([x,y,z], center=True)
     #Tab of 1 by 1 extra
     tab = cube([x,y+1,1], center = True)    
-    # z = 15, so middle is 7.5 and middle tab, so to be at 6 middle -2
-    tab = down(2)(tab)
+    # z = 15, so middle is 7.5, 4 solid at bottom, 
+    tab = down(15/2-1/2-(5-1))(tab)
 
     # double x to make manifold, third of the middle, up by 4
-    center_hole = up(4)(cube([x*2,y/3,z], center=True))
+    center_hole = up(2.5)(cube([x*2,y/3,z], center=True))
 
     pin =   color("Green")(pin_core + tab - center_hole )
     return pin
